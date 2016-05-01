@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 cat ../sql/create-type-sportsman_class_types.sql \
+    ../sql/create-function-venue_type_is_same.sql \
     ../sql/create-table-venue_type.sql \
     ../sql/create-table-venue.sql \
     ../sql/create-table-venue_type_attribute.sql \
