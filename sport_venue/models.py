@@ -57,6 +57,9 @@ class VenueType(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
 
+    def __repr__(self):
+        return '%s' % (self.name,)
+
 
 class VenueTypeAttribute(Base):
     __tablename__ = 'venue_type_attribute'
@@ -64,6 +67,10 @@ class VenueTypeAttribute(Base):
     name = Column(Unicode, nullable=False)
     venue_type_id = Column(Integer, ForeignKey('venue_type.id'),
                            nullable=False)
+    venue_type = relationship('VenueType')
+
+    def __repr__(self):
+        return '%s (%s)' % (self.name, self.venue_type)
 
 
 class Venue(Base):
@@ -73,6 +80,7 @@ class Venue(Base):
     address = Column(Unicode, nullable=False)
     venue_type_id = Column(Integer, ForeignKey('venue_type.id'),
                            nullable=False)
+    venue_type = relationship('VenueType')
 
     def __repr__(self):
         return '%s' % (self.name,)
@@ -85,12 +93,17 @@ class VenueAttribute(Base):
     venue_id = Column(Integer, ForeignKey('venue.id'),
                       primary_key=True)
     value = Column(Unicode)
+    attribute = relationship('VenueTypeAttribute')
+    venue = relationship('Venue')
 
 
 class Club(Base):
     __tablename__ = 'club'
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
+
+    def __repr__(self):
+        return '%s' % (self.name,)
 
 
 class Sportsman(Base):
@@ -102,6 +115,7 @@ class Sportsman(Base):
     coaches = relationship('Coach',
                            secondary=sportsman_coach,
                            backref='sportsmen')
+    club = relationship('Club')
 
     def __repr__(self):
         return '%s %s' % (self.firstname, self.lastname)
@@ -114,6 +128,7 @@ class Coach(Base):
     lastname = Column(Unicode, nullable=False)
     sport_type_id = Column(Integer, ForeignKey('sport_type.id'),
                            nullable=False)
+    sport_type = relationship('SportType')
 
     def __repr__(self):
         return '%s %s' % (self.firstname, self.lastname)
@@ -127,6 +142,7 @@ class SportsmanClass(Base):
                            nullable=False, primary_key=True)
     class_ = Column('class', Enum(*sportsman_class_types,
                                   name='sportsman_class_types'))
+    sport_type = relationship('SportType')
 
 
 class SportType(Base):
@@ -134,11 +150,17 @@ class SportType(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
 
+    def __repr__(self):
+        return '%s' % (self.name,)
+
 
 class Organization(Base):
     __tablename__ = 'organization'
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
+
+    def __repr__(self):
+        return '%s' % (self.name,)
 
 
 class Competition(Base):
@@ -154,11 +176,14 @@ class Competition(Base):
     venues = relationship('Venue',
                           secondary=competition_venue,
                           backref='competitions')
+    organization = relationship('Organization')
+    sport_type = relationship('SportType')
 
     def __repr__(self):
-        return '%s (%s - %s)' % (self.name,
-                                 self.date_start.strftime('%d.%m.%Y'),
-                                 self.date_end.strftime('%d.%m.%Y'))
+        return '%s (%s - %s) [%s]' % (self.name,
+                                     self.date_start.strftime('%d.%m.%Y'),
+                                     self.date_end.strftime('%d.%m.%Y'),
+                                     self.sport_type)
 
 
 class CompetitionResult(Base):
@@ -169,3 +194,5 @@ class CompetitionResult(Base):
     sportsman_id = Column(Integer, ForeignKey('sportsman.id'),
                           nullable=False)
     place = Column(Integer, CheckConstraint('place>0'), nullable=False)
+    competition = relationship('Competition')
+    sportsman = relationship('Sportsman')
