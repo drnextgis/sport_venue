@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from deform.widget import TextAreaWidget
+
 from sqlalchemy import (
     Table,
     Column,
@@ -75,7 +77,9 @@ class VenueTypeAttribute(Base):
 
 class Venue(Base):
     __tablename__ = 'venue'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True,
+                info={'colanderalchemy': {'widget':
+                      TextAreaWidget(readonly=True)}})
     name = Column(Unicode, nullable=False,
                   info={'colanderalchemy': {'title': 'Название'}})
     address = Column(Unicode, nullable=False,
