@@ -76,11 +76,14 @@ class VenueTypeAttribute(Base):
 class Venue(Base):
     __tablename__ = 'venue'
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode, nullable=False)
-    address = Column(Unicode, nullable=False)
+    name = Column(Unicode, nullable=False,
+                  info={'colanderalchemy': {'title': 'Название'}})
+    address = Column(Unicode, nullable=False,
+                     info={'colanderalchemy': {'title': 'Адрес'}})
     venue_type_id = Column(Integer, ForeignKey('venue_type.id'),
                            nullable=False)
-    venue_type = relationship('VenueType')
+    venue_type = relationship('VenueType',
+                              info={'colanderalchemy': {'title': 'Тип'}})
 
     def __repr__(self):
         return '%s' % (self.name,)
@@ -181,9 +184,9 @@ class Competition(Base):
 
     def __repr__(self):
         return '%s (%s - %s) [%s]' % (self.name,
-                                     self.date_start.strftime('%d.%m.%Y'),
-                                     self.date_end.strftime('%d.%m.%Y'),
-                                     self.sport_type)
+                                      self.date_start.strftime('%d.%m.%Y'),
+                                      self.date_end.strftime('%d.%m.%Y'),
+                                      self.sport_type)
 
 
 class CompetitionResult(Base):
