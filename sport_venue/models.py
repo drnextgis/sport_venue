@@ -20,7 +20,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (
     scoped_session,
     sessionmaker,
-    relationship
+    relationship,
+    backref,
     )
 
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -182,7 +183,8 @@ class Competition(Base):
     date_end = Column(Date, nullable=False)
     venues = relationship('Venue',
                           secondary=competition_venue,
-                          backref='competitions')
+                          backref=backref('competitions', info={
+                              'colanderalchemy': {'title': 'Соревнования'}}))
     organization = relationship('Organization')
     sport_type = relationship('SportType')
 
