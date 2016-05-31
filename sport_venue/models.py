@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from datetime import datetime
 
 from deform.widget import TextAreaWidget
 
@@ -55,7 +56,25 @@ competition_venue = Table('competition_venue', Base.metadata,
                           PrimaryKeyConstraint('competition_id', 'venue_id'))
 
 
-class VenueType(Base):
+class JsonifyMixin:
+    def __init__(self):
+        pass
+
+    def as_json_dict(self, **init):
+        d = dict()
+        for c in self.__table__.columns:
+            v = getattr(self, c.name)
+            if isinstance(v, datetime):
+                v = v.isoformat()
+            d[c.name] = v
+
+        for k, v in init.items():
+            d[k] = v
+
+        return d
+
+
+class VenueType(Base, JsonifyMixin):
     __tablename__ = 'venue_type'
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
@@ -64,7 +83,7 @@ class VenueType(Base):
         return '%s' % (self.name,)
 
 
-class VenueTypeAttribute(Base):
+class VenueTypeAttribute(Base, JsonifyMixin):
     __tablename__ = 'venue_type_attribute'
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
@@ -76,7 +95,7 @@ class VenueTypeAttribute(Base):
         return '%s (%s)' % (self.name, self.venue_type)
 
 
-class Venue(Base):
+class Venue(Base, JsonifyMixin):
     __tablename__ = 'venue'
     id = Column(Integer, primary_key=True,
                 info={'colanderalchemy': {'widget':
@@ -94,7 +113,7 @@ class Venue(Base):
         return '%s' % (self.name,)
 
 
-class VenueAttribute(Base):
+class VenueAttribute(Base, JsonifyMixin):
     __tablename__ = 'venue_attribute'
     attribute_id = Column(Integer, ForeignKey('venue_type_attribute.id'),
                           primary_key=True)
@@ -105,7 +124,7 @@ class VenueAttribute(Base):
     venue = relationship('Venue')
 
 
-class Club(Base):
+class Club(Base, JsonifyMixin):
     __tablename__ = 'club'
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
@@ -114,7 +133,7 @@ class Club(Base):
         return '%s' % (self.name,)
 
 
-class Sportsman(Base):
+class Sportsman(Base, JsonifyMixin):
     __tablename__ = 'sportsman'
     id = Column(Integer, primary_key=True)
     firstname = Column(Unicode, nullable=False)
@@ -129,7 +148,7 @@ class Sportsman(Base):
         return '%s %s' % (self.firstname, self.lastname)
 
 
-class Coach(Base):
+class Coach(Base, JsonifyMixin):
     __tablename__ = 'coach'
     id = Column(Integer, primary_key=True)
     firstname = Column(Unicode, nullable=False)
@@ -142,7 +161,7 @@ class Coach(Base):
         return '%s %s' % (self.firstname, self.lastname)
 
 
-class SportsmanClass(Base):
+class SportsmanClass(Base, JsonifyMixin):
     __tablename__ = 'sportsman_class'
     sportsman_id = Column(Integer, ForeignKey('sportsman.id'),
                           nullable=False, primary_key=True)
@@ -153,7 +172,7 @@ class SportsmanClass(Base):
     sport_type = relationship('SportType')
 
 
-class SportType(Base):
+class SportType(Base, JsonifyMixin):
     __tablename__ = 'sport_type'
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
@@ -162,7 +181,7 @@ class SportType(Base):
         return '%s' % (self.name,)
 
 
-class Organization(Base):
+class Organization(Base, JsonifyMixin):
     __tablename__ = 'organization'
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
@@ -171,7 +190,7 @@ class Organization(Base):
         return '%s' % (self.name,)
 
 
-class Competition(Base):
+class Competition(Base, JsonifyMixin):
     __tablename__ = 'competition'
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
@@ -195,7 +214,7 @@ class Competition(Base):
                                       self.sport_type)
 
 
-class CompetitionResult(Base):
+class CompetitionResult(Base, JsonifyMixin):
     __tablename__ = 'competition_result'
     id = Column(Integer, primary_key=True)
     competition_id = Column(Integer, ForeignKey('competition.id'),

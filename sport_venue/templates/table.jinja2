@@ -1,0 +1,30 @@
+{% extends "pyramid_sacrud:templates/sacrud/base.jinja2" %}
+
+{% block body %}
+
+<table class="bordered highlight hoverable z-depth-1">
+  {% if result %}
+    <thead>
+      <tr class="blue lighten-5">
+        {% for col in result[0] %}
+          <th>{{ col }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+    {% for row in result %}
+      <tr>
+        {% for key in row %}
+          <td>{{ row[key]|string|truncate(200) }}</td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  {% else %}
+    <tr>
+      <td>{{'There are no objects'}}</td>
+    </tr>
+  {% endif %}
+</table>
+
+{% endblock %}

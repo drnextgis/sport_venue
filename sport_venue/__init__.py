@@ -52,7 +52,13 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.include('ps_alchemy')
     config.include(sacrud_settings)
+    config.add_jinja2_search_path('templates/')
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
+
+    config.add_route('collection', '/api/{table_name}/collection/')
+    config.add_route('sql10', '/api/query/10')
+    config.add_route('sql12', '/api/query/12')
+
     config.scan()
     return config.make_wsgi_app()
