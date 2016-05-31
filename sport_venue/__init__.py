@@ -57,6 +57,7 @@ def main(global_config, **settings):
     config.add_route('home', '/')
 
     config.add_route('collection', '/api/{table_name}/collection/')
+    config.add_route('sql5', '/api/query/5')
     config.add_route('sql10', '/api/query/10')
     config.add_route('sql12', '/api/query/12')
 

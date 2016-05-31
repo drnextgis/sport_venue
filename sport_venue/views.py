@@ -9,6 +9,7 @@ from .models import (
     Base,
     DBSession,
     Coach,
+    Sportsman,
     Organization,
     Competition
     )
@@ -37,6 +38,25 @@ def cget(request):
             result.append(itm.as_json_dict())
 
     return result
+
+
+@view_config(route_name='sql5', renderer='table.jinja2')
+def sql5(request):
+    result = []
+    sportsman = request.GET.get('sportsman')
+
+    query = DBSession.query(
+        Coach.id,
+        Coach.firstname,
+        Coach.lastname
+    ). \
+        join(Sportsman.coaches). \
+        filter(Sportsman.id == int(sportsman))
+
+    for itm in query.all():
+        result.append(dict(id=itm.id, firstname=itm.firstname, lastname=itm.lastname))
+
+    return dict(result=result)
 
 
 @view_config(route_name='sql10', renderer='table.jinja2')
